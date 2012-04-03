@@ -52,7 +52,8 @@ turned into a well-received and pretty solid and fun standalone game.
 %patch0 -p1
 
 %build
-%__make V=1
+%__mkdir_p ~/tmp11
+%make V=1
 
 %install
 %__rm -rf %{buildroot}
