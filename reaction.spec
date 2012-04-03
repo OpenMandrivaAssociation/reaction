@@ -52,7 +52,7 @@ turned into a well-received and pretty solid and fun standalone game.
 %patch0 -p1
 
 %build
-%__mkdir_p ~/tmp11
+%__mkdir_p ~/tmp
 %make V=1
 
 %install
