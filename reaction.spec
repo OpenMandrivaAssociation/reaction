@@ -1,11 +1,14 @@
+%if %{_use_internal_dependency_generator}
+%define _noautoprov ^renderer(.*)
+%else
 %define _provides_exceptions ^renderer
-%define _noautoprov ^renderer
+%endif
 
 %define		oname	Reaction
 
 Name:		reaction
 Version:	1.0
-Release:	%mkrel 1
+Release:	2
 Summary:	First-person shooter based on modified Quake 3 engine
 Group:		Games/Arcade
 License:	GPLv2
@@ -13,9 +16,10 @@ URL:		http://rq3.com/
 Source0:	http://download.rq3.com/%{oname}-%{version}-source.tar.gz
 Patch0:		reaction-1.0-mdv-custom.patch
 BuildRequires:	jpeg-devel
-BuildRequires:	mesagl-devel
-BuildRequires:	SDL-devel
-BuildRequires:	zlib-devel
+BuildRequires:	pkgconfig(gl)
+BuildRequires:	pkgconfig(glu)
+BuildRequires:	pkgconfig(sdl)
+BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(ogg)
 BuildRequires:	pkgconfig(speex)
 BuildRequires:	pkgconfig(vorbis)
@@ -52,38 +56,36 @@ turned into a well-received and pretty solid and fun standalone game.
 %patch0 -p1
 
 %build
-%__mkdir_p ~/tmp
+mkdir -p ~/tmp
 %make V=1
 
 %install
-%__rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_gamesbindir}
+cp build/release-linux-*/%{oname}.* %{buildroot}%{_gamesbindir}/%{name}
+cp build/release-linux-*/%{oname}ded.* %{buildroot}%{_gamesbindir}/%{name}-server
 
-%__mkdir_p %{buildroot}%{_gamesbindir}
-%__cp build/release-linux-*/%{oname}.* %{buildroot}%{_gamesbindir}/%{name}
-%__cp build/release-linux-*/%{oname}ded.* %{buildroot}%{_gamesbindir}/%{name}-server
+mkdir -p %{buildroot}%{_libdir}/%{name}
+cp build/release-linux-*/*.so %{buildroot}%{_libdir}/%{name}/
 
-%__mkdir_p %{buildroot}%{_libdir}/%{name}
-%__cp build/release-linux-*/*.so %{buildroot}%{_libdir}/%{name}/
-
-%__mkdir_p %{buildroot}%{_gamesdatadir}/%{name}
+mkdir -p %{buildroot}%{_gamesdatadir}/%{name}
 pushd %{buildroot}%{_gamesdatadir}/%{name}
 for N in %{buildroot}%{_libdir}/%{name}/*.so
 do
-%__ln_s %{_libdir}/%{name}/`basename $N` `basename $N`;
+ln -s %{_libdir}/%{name}/`basename $N` `basename $N`;
 done
 popd
 
 # create and install icons
 for N in 16 32 48 64 128; do convert %{oname}.png -scale ${N}x${N}! $N.png; done
-%__install -D 16.png -m 644 %{buildroot}%{_iconsdir}/hicolor/16x16/apps/%{name}.png
-%__install -D 32.png -m 644 %{buildroot}%{_iconsdir}/hicolor/32x32/apps/%{name}.png
-%__install -D 48.png -m 644 %{buildroot}%{_iconsdir}/hicolor/48x48/apps/%{name}.png
-%__install -D 64.png -m 644 %{buildroot}%{_iconsdir}/hicolor/64x64/apps/%{name}.png
-%__install -D 128.png -m 644 %{buildroot}%{_iconsdir}/hicolor/128x128/apps/%{name}.png
+install -D 16.png -m 644 %{buildroot}%{_iconsdir}/hicolor/16x16/apps/%{name}.png
+install -D 32.png -m 644 %{buildroot}%{_iconsdir}/hicolor/32x32/apps/%{name}.png
+install -D 48.png -m 644 %{buildroot}%{_iconsdir}/hicolor/48x48/apps/%{name}.png
+install -D 64.png -m 644 %{buildroot}%{_iconsdir}/hicolor/64x64/apps/%{name}.png
+install -D 128.png -m 644 %{buildroot}%{_iconsdir}/hicolor/128x128/apps/%{name}.png
 
 # XDG menu entry
-%__mkdir_p %{buildroot}%{_datadir}/applications
-%__cat > %{buildroot}%{_datadir}/applications/%{name}.desktop << EOF
+mkdir -p %{buildroot}%{_datadir}/applications
+cat > %{buildroot}%{_datadir}/applications/%{name}.desktop << EOF
 [Desktop Entry]
 Type=Application
 Name=%{oname}
@@ -94,9 +96,6 @@ Terminal=false
 Categories=Game;ArcadeGame;
 EOF
 
-%clean
-%__rm -rf %{buildroot}
-
 %files
 %doc COPYING.txt README README-Reaction id-readme.txt
 %{_gamesbindir}/%{name}
@@ -105,4 +104,16 @@ EOF
 %{_libdir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_iconsdir}/hicolor/*/apps/%{name}.png
+
+
+
+%changelog
+* Tue Apr 03 2012 Andrey Bondrov <abondrov@mandriva.org> 1.0-1mdv2011.0
++ Revision: 788912
+- Create missing ~/tmp at build time to fix build in 2011
+- Use verbose build
+
+* Mon Apr 02 2012 Andrey Bondrov <abondrov@mandriva.org> 1.0-1
++ Revision: 788807
+- imported package reaction
 
