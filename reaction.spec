@@ -8,7 +8,7 @@
 
 Name:		reaction
 Version:	1.0
-Release:	2
+Release:	3
 Summary:	First-person shooter based on modified Quake 3 engine
 Group:		Games/Arcade
 License:	GPLv2
