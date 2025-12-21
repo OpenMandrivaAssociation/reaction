@@ -15,6 +15,7 @@ License:	GPLv2
 URL:		https://rq3.com/
 Source0:	http://download.rq3.com/%{oname}-%{version}-source.tar.gz
 Patch0:		reaction-1.0-mdv-custom.patch
+BuildRequires:	make
 BuildRequires:	jpeg-devel
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
